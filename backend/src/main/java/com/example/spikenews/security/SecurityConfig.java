@@ -36,8 +36,8 @@ public class SecurityConfig {
                         // Endpoints Públicos de Autenticação
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
 
-                        // Leitura pública de notícias, placares e times
-                        .requestMatchers(HttpMethod.GET, "/news/**", "/matches/**", "/teams/**").permitAll()
+                        // Leitura pública de notícias, placares, times e catálogo de assets do Valorant
+                        .requestMatchers(HttpMethod.GET, "/news/**", "/matches/**", "/teams/**", "/api/catalog/**").permitAll()
 
                         // Endpoints exclusivos de Administrador
                         .requestMatchers("/admin/**").hasRole("ADMIN")
