@@ -30,11 +30,11 @@ public class ValorantCatalogService {
     public ValorantCatalogService(ValorantApiService apiService,
                                  ValorantAgentRepository agentRepository,
                                  ValorantMapRepository mapRepository,
-                                 ObjectMapper objectMapper) {
+                                 @org.springframework.beans.factory.annotation.Autowired(required = false) ObjectMapper objectMapper) {
         this.apiService = apiService;
         this.agentRepository = agentRepository;
         this.mapRepository = mapRepository;
-        this.objectMapper = objectMapper;
+        this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper();
     }
 
     @Transactional

@@ -19,8 +19,9 @@ public class ValorantApiService {
     public static final String BASE_URL = "https://valorant-api.com/v1/";
     private final RestClient restClient;
 
-    public ValorantApiService(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder
+    public ValorantApiService(@org.springframework.beans.factory.annotation.Autowired(required = false) RestClient.Builder restClientBuilder) {
+        RestClient.Builder builder = restClientBuilder != null ? restClientBuilder : RestClient.builder();
+        this.restClient = builder
                 .baseUrl(BASE_URL)
                 .defaultHeader("Accept", "application/json")
                 .build();
