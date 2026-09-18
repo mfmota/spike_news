@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Long> {
+
+    Optional<Match> findByIdApiExterna(String idApiExterna);
 
     List<Match> findByStatus(MatchStatus status);
 
@@ -19,4 +22,3 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findByTimeCasaIdOrTimeForaId(Long timeCasaId, Long timeForaId);
 }
-

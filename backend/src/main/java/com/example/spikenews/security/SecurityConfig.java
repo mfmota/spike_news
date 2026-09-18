@@ -33,8 +33,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // Endpoints Públicos de Autenticação
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                        // Endpoints Públicos de Autenticação e Integração Interna (Webhooks / Scraper)
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/api/internal/**").permitAll()
+                        .requestMatchers("/api/internal/**").permitAll()
 
                         // Leitura pública de notícias, placares, times e catálogo de assets do Valorant
                         .requestMatchers(HttpMethod.GET, "/news/**", "/matches/**", "/teams/**", "/api/catalog/**").permitAll()

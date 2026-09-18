@@ -37,6 +37,12 @@ public class Match {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(name = "id_api_externa", unique = true)
+    private String idApiExterna;
+
+    @Column(name = "url_match")
+    private String urlMatch;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "fk_time_casa", nullable = false)
     private Team timeCasa;
@@ -54,5 +60,13 @@ public class Match {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private MatchStatus status;
-}
 
+    @Column(name = "torneio")
+    private String torneio;
+
+    @Column(name = "fase_torneio")
+    private String faseTorneio;
+
+    @Column(name = "tempo_status")
+    private String tempoStatus;
+}
