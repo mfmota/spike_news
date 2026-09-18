@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/internal/matches")
 public class InternalMatchController {
@@ -24,5 +26,10 @@ public class InternalMatchController {
         MatchResponseDTO updatedMatch = matchService.processMatchUpdate(matchUpdate);
         return ResponseEntity.ok(updatedMatch);
     }
-}
 
+    @PostMapping("/batch")
+    public ResponseEntity<List<MatchResponseDTO>> receiveBatchMatchUpdates(@RequestBody List<MatchUpdateDTO> matchUpdates) {
+        List<MatchResponseDTO> updatedMatches = matchService.processBatchMatchUpdates(matchUpdates);
+        return ResponseEntity.ok(updatedMatches);
+    }
+}

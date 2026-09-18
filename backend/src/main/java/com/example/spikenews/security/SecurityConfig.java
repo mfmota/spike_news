@@ -30,15 +30,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(org.springframework.security.config.Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // Endpoints Públicos de Autenticação e Integração Interna (Webhooks / Scraper)
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/api/internal/**").permitAll()
+                        // Endpoints Públicos de Autenticação e Ingestão de Placares pelo Scraper
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/api/matches/ingest/**", "/api/internal/**").permitAll()
                         .requestMatchers("/api/internal/**").permitAll()
 
-                        // Leitura pública de notícias, placares, times e catálogo de assets do Valorant
-                        .requestMatchers(HttpMethod.GET, "/news/**", "/matches/**", "/teams/**", "/api/catalog/**").permitAll()
+                        // Leitura pública e streaming SSE de placares, notícias, times e catálogo
+                        .requestMatchers(HttpMethod.GET, "/news/**", "/matches/**", "/teams/**", "/api/catalog/**", "/api/matches/**").permitAll()
 
                         // Endpoints exclusivos de Administrador
                         .requestMatchers("/admin/**").hasRole("ADMIN")

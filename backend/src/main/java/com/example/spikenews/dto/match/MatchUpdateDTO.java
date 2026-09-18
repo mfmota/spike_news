@@ -1,15 +1,21 @@
 package com.example.spikenews.dto.match;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchUpdateDTO {
 
     @JsonProperty("match_id")
@@ -41,4 +47,3 @@ public class MatchUpdateDTO {
     @JsonProperty("tournament_stage")
     private String tournamentStage;
 }
-
