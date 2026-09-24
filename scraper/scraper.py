@@ -1,157 +1,120 @@
-import time
 import requests
 from bs4 import BeautifulSoup
-import os
 import json
-import logging
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("VLR-Scraper")
+import os
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8080/api/matches/internal/update")
 INTERNAL_KEY = os.getenv("INTERNAL_API_KEY", "spike-news-internal-scraper-key-2026")
-VLR_MATCHES_URL = "https://www.vlr.gg/matches"
-POLL_INTERVAL_SECONDS = int(os.getenv("POLL_INTERVAL_SECONDS", "30"))
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
-}
-
-def parse_vlr_matches(html_content: str):
-    """Extrai partidas e placares do HTML do VLR.gg"""
-    soup = BeautifulSoup(html_content, "html.parser")
-    matches = []
-    
-    match_items = soup.select(".match-item")
-    if not match_items:
-        # Tenta seletores alternativos
-        match_items = soup.select("a.wf-module-item")
-        
-    for item in match_items:
-        try:
-            # Status
-            status_text = "AGENDADO"
-            eta_el = item.select_one(".match-item-eta")
-            if eta_el:
-                eta_text = eta_el.get_text(strip=True).upper()
-                if "LIVE" in eta_text or "AO VIVO" in eta_text:
-                    status_text = "AO_VIVO"
-                elif "COMPLETED" in eta_text or "FINAL" in eta_text:
-                    status_text = "FINALIZADO"
-
-            # Times e Logos
-            teams = item.select(".match-item-vs-team-name")
-            if len(teams) < 2:
-                teams = item.select(".text-of")
-            
-            if len(teams) >= 2:
-                team_home = teams[0].get_text(strip=True)
-                team_away = teams[1].get_text(strip=True)
-            else:
-                continue
-
-            # Logos
-            logos = item.select(".match-item-vs-team img")
-            logo_home = logos[0]["src"] if len(logos) > 0 and logos[0].has_attr("src") else ""
-            logo_away = logos[1]["src"] if len(logos) > 1 and logos[1].has_attr("src") else ""
-
-            if logo_home and logo_home.startswith("//"):
-                logo_home = "https:" + logo_home
-            if logo_away and logo_away.startswith("//"):
-                logo_away = "https:" + logo_away
-
-            # Placares
-            scores = item.select(".match-item-vs-team-score")
-            score_home = 0
-            score_away = 0
-            if len(scores) >= 2:
-                try:
-                    score_home = int(scores[0].get_text(strip=True))
-                    score_away = int(scores[1].get_text(strip=True))
-                except ValueError:
-                    pass
-
-            # Evento / Campeonato
-            event_el = item.select_one(".match-item-event")
-            evento = event_el.get_text(strip=True) if event_el else "VCT Series"
-
-            matches.append({
-                "timeCasa": team_home,
-                "logoTimeCasa": logo_home,
-                "timeFora": team_away,
-                "logoTimeFora": logo_away,
-                "pontuacaoCasa": score_home,
-                "pontuacaoFora": score_away,
-                "status": status_text,
-                "evento": evento
-            })
-        except Exception as e:
-            logger.debug(f"Erro ao processar item de partida: {e}")
-            continue
-
-    return matches
-
-def send_update_to_backend(match_data: dict):
-    """Envia payload JSON para o endpoint interno do backend Spring Boot"""
-    headers = {
-        "Content-Type": "application/json",
-        "X-Internal-Token": INTERNAL_KEY
-    }
+def send_update_to_backend(item_partida: dict):
+    """Sincroniza a partida individual no backend Spring Boot do Spike News"""
     try:
-        response = requests.post(BACKEND_URL, json=match_data, headers=headers, timeout=5)
-        if response.status_code == 200:
-            logger.info(f"Sucesso: Partida {match_data['timeCasa']} ({match_data['pontuacaoCasa']}) x ({match_data['pontuacaoFora']}) {match_data['timeFora']} sincronizada.")
+        # Mapeamento do tipo para o enum de status do backend
+        tipo = item_partida.get("tipo", "UPCOMING")
+        if tipo == "LIVE":
+            status_enum = "AO_VIVO"
+        elif tipo == "RECENT":
+            status_enum = "FINALIZADO"
         else:
-            logger.warning(f"Backend retornou status {response.status_code}: {response.text}")
-    except Exception as e:
-        logger.error(f"Erro ao enviar atualização para o backend: {e}")
+            status_enum = "AGENDADO"
 
-def run_scraper_cycle():
-    logger.info("Iniciando ciclo de scraping no VLR.gg...")
-    try:
-        response = requests.get(VLR_MATCHES_URL, headers=HEADERS, timeout=10)
-        if response.status_code == 200:
-            matches = parse_vlr_matches(response.text)
-            logger.info(f"Extraídas {len(matches)} partidas do VLR.gg.")
-            for match in matches:
-                send_update_to_backend(match)
-        else:
-            logger.warning(f"VLR.gg retornou HTTP {response.status_code}. Executando fallback...")
-            run_fallback_simulation()
-    except Exception as e:
-        logger.warning(f"Falha de conexão com VLR.gg ({e}). Executando ciclo de simulação local...")
-        run_fallback_simulation()
+        placar_casa = item_partida["placarCasa"]
+        placar_fora = item_partida["placarFora"]
 
-def run_fallback_simulation():
-    """Gera atualizações simuladas para demonstração e testes locais"""
-    sample_matches = [
-        {
-            "timeCasa": "LOUD",
-            "logoTimeCasa": "https://owcdn.net/img/62a26569ecf20.png",
-            "timeFora": "Sentinels",
-            "logoTimeFora": "https://owcdn.net/img/62a2679dc6e86.png",
-            "pontuacaoCasa": 13,
-            "pontuacaoFora": 11,
-            "status": "AO_VIVO",
-            "evento": "VCT Americas - Rodada 1"
-        },
-        {
-            "timeCasa": "Fnatic",
-            "logoTimeCasa": "https://owcdn.net/img/62a268a7ecf20.png",
-            "timeFora": "Paper Rex",
-            "logoTimeFora": "https://owcdn.net/img/62a2690cecf20.png",
-            "pontuacaoCasa": 9,
-            "pontuacaoFora": 8,
-            "status": "AO_VIVO",
-            "evento": "VALORANT Champions - Playoffs"
+        score_home = int(placar_casa) if str(placar_casa).isdigit() else 0
+        score_away = int(placar_fora) if str(placar_fora).isdigit() else 0
+
+        payload = {
+            "timeCasa": item_partida["timeCasa"],
+            "logoTimeCasa": "",
+            "timeFora": item_partida["timeFora"],
+            "logoTimeFora": "",
+            "pontuacaoCasa": score_home,
+            "pontuacaoFora": score_away,
+            "status": status_enum,
+            "evento": item_partida.get("campeonato", "VCT")
         }
-    ]
-    for match in sample_matches:
-        send_update_to_backend(match)
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-Internal-Token": INTERNAL_KEY
+        }
+        requests.post(BACKEND_URL, json=payload, headers=headers, timeout=3)
+    except Exception:
+        # Se o backend estiver offline em teste local, ignora silenciosamente
+        pass
+
+def extrair_todas_partidas_vlr():
+    url = "https://www.vlr.gg/matches"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        matches = soup.find_all('a', class_='match-item')
+        
+        jogos_ao_vivo = []
+        proximos_jogos = []
+        resultados_recentes = []
+
+        for match in matches:
+            teams = match.find_all('div', class_='match-item-vs-team-name')
+            scores = match.find_all('div', class_='match-item-vs-team-score')
+            eta = match.find('div', class_='match-item-eta')
+            event = match.find('div', class_='match-item-event')
+
+            if len(teams) >= 2 and len(scores) >= 2:
+                time_casa = teams[0].get_text(strip=True)
+                time_fora = teams[1].get_text(strip=True)
+                placar_casa = scores[0].get_text(strip=True)
+                placar_fora = scores[1].get_text(strip=True)
+                status_tempo = eta.get_text(strip=True) if eta else "N/A"
+                campeonato = event.get_text(strip=True) if event else "N/A"
+
+                # 1. Checa se o jogo está AO VIVO (classe 'mod-live' ou texto 'LIVE')
+                classes_match = match.get('class', [])
+                eh_ao_vivo = 'mod-live' in classes_match or 'LIVE' in status_tempo.upper()
+
+                # 2. Checa se é resultado finalizado
+                eh_resultado = placar_casa.isdigit() and placar_fora.isdigit() and not eh_ao_vivo
+
+                item_partida = {
+                    "campeonato": campeonato,
+                    "timeCasa": time_casa,
+                    "placarCasa": placar_casa if (eh_resultado or eh_ao_vivo) else "-",
+                    "timeFora": time_fora,
+                    "placarFora": placar_fora if (eh_resultado or eh_ao_vivo) else "-",
+                    "statusTempo": status_tempo
+                }
+
+                if eh_ao_vivo:
+                    item_partida["tipo"] = "LIVE"
+                    jogos_ao_vivo.append(item_partida)
+                elif eh_resultado:
+                    item_partida["tipo"] = "RECENT"
+                    resultados_recentes.append(item_partida)
+                else:
+                    item_partida["tipo"] = "UPCOMING"
+                    proximos_jogos.append(item_partida)
+
+                # Dispara sincronização com o backend
+                send_update_to_backend(item_partida)
+
+        dados_finais = {
+            "jogosAoVivo": jogos_ao_vivo,
+            "proximosJogos": proximos_jogos,
+            "resultadosRecentes": resultados_recentes
+        }
+
+        print(json.dumps(dados_finais, indent=4, ensure_ascii=False))
+        return dados_finais
+
+    except Exception as e:
+        print(f"Erro ao realizar raspagem: {e}")
 
 if __name__ == "__main__":
-    logger.info("Worker Python Scraper inicializado.")
-    logger.info(f"Target Backend: {BACKEND_URL}")
-    run_scraper_cycle()
+    extrair_todas_partidas_vlr()
