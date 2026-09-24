@@ -1,49 +1,32 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { storageService } from './storage.service';
+import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 15000,
 });
 
-/**
- * Request Interceptor:
- * Injeta automaticamente o token JWT Bearer em todas as requisições autenticadas.
- */
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = storageService.getToken();
-    if (token && config.headers) {
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('spike_news_token');
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
   }
-);
+  return config;
+});
 
-/**
- * Response Interceptor:
- * Trata respostas de erro globais, como 401 Unauthorized (token expirado/inválido).
- */
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (error.response) {
-      const status = error.response.status;
-      const originalRequest = error.config;
-
-      // Se receber 401 (Unauthorized) e não for uma tentativa do próprio login
-      if (status === 401 && originalRequest && !originalRequest.url?.includes('/auth/login')) {
-        storageService.clearAuth();
-        // Dispara evento customizado para notificar os contextos da aplicação
-        window.dispatchEvent(new Event('auth:unauthorized'));
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      if (typeof window !== 'undefined') {
+        // Token expirado ou inválido
+        localStorage.removeItem('spike_news_token');
+        localStorage.removeItem('spike_news_user');
       }
     }
     return Promise.reject(error);
@@ -51,4 +34,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

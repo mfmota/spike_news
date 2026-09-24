@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 236, 232, 225;
+  --background-start-rgb: 15, 25, 35;
+  --background-end-rgb: 24, 30, 36;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 70, 85, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 70, 85, 0.8);
+  }
+}
+
+.live-pulse {
+  animation: pulseGlow 2s infinite;
+}

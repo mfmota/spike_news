@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli",
+        "run",
+        "mcp-obsidian",
+        "--config",
+        "{\"vaultPath\":\"C:\\\\Users\\\\mfmsouza\\\\Documents\\\\spike_news\\\\spike_news\"}"
+      ]
+    }
+  }
+}
