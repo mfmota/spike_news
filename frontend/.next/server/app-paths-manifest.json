@@ -1,8 +1,13 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/catalogo/page": "app/catalogo/page.js",
+  "/manifest.webmanifest/route": "app/manifest.webmanifest/route.js",
+  "/jornalista/page": "app/jornalista/page.js",
+  "/admin/usuarios/page": "app/admin/usuarios/page.js",
+  "/preferencias/page": "app/preferencias/page.js",
   "/noticias/[id]/page": "app/noticias/[id]/page.js",
   "/page": "app/page.js",
-  "/catalogo/page": "app/catalogo/page.js",
-  "/login/page": "app/login/page.js",
-  "/preferencias/page": "app/preferencias/page.js"
+  "/cadastro/page": "app/cadastro/page.js",
+  "/login/page": "app/login/page.js"
 }

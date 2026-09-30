@@ -3,12 +3,15 @@ package com.spikenews.dto;
 import com.spikenews.model.Role;
 import com.spikenews.model.User;
 
+import java.time.LocalDateTime;
+
 public class UserResponseDTO {
 
     private Long id;
     private String nome;
     private String email;
     private Role role;
+    private LocalDateTime createdAt;
 
     public UserResponseDTO() {}
 
@@ -17,6 +20,7 @@ public class UserResponseDTO {
         this.nome = user.getNome();
         this.email = user.getEmail();
         this.role = user.getRole();
+        this.createdAt = user.getCreatedAt();
     }
 
     public Long getId() {
@@ -49,5 +53,13 @@ public class UserResponseDTO {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

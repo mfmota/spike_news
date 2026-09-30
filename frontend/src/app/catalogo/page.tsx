@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '@/services/api';
 import { Agent, MapData, Weapon } from '@/types';
-import { Shield, MapPin, Crosshair, Search, RefreshCw } from 'lucide-react';
+import { Shield, MapPin, Crosshair, Search, RefreshCw, X } from 'lucide-react';
 
 export default function CatalogPage() {
   const [activeTab, setActiveTab] = useState<'agents' | 'maps' | 'weapons'>('agents');
@@ -48,15 +48,15 @@ export default function CatalogPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <span className="text-xs font-bold text-[#ff4655] uppercase tracking-widest font-mono">
             API OFICIAL VALORANT (PT-BR) & CACHE LOCAL
           </span>
-          <h1 className="text-3xl font-black text-white uppercase tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mt-1">
             Catálogo de Assets & Equipamentos
           </h1>
         </div>
@@ -66,19 +66,27 @@ export default function CatalogPage() {
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3.5" />
           <input
             type="text"
-            placeholder="Pesquisar..."
+            placeholder="Pesquisar agente, mapa ou arma..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#1f2326] border border-gray-700 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4655]"
+            className="w-full bg-[#1f2326] border border-gray-700 rounded-xl pl-9 pr-8 py-2.5 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4655]"
           />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-2.5 top-3 text-gray-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-gray-800 mb-8 space-x-8">
+      {/* Tabs (Touch Scrollable on Mobile) */}
+      <div className="flex border-b border-gray-800 mb-8 space-x-4 sm:space-x-8 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('agents')}
-          className={`pb-4 text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all ${
+          className={`pb-3 sm:pb-4 text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'agents'
               ? 'border-[#ff4655] text-white'
               : 'border-transparent text-gray-500 hover:text-gray-300'
@@ -90,7 +98,7 @@ export default function CatalogPage() {
 
         <button
           onClick={() => setActiveTab('maps')}
-          className={`pb-4 text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all ${
+          className={`pb-3 sm:pb-4 text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'maps'
               ? 'border-[#ff4655] text-white'
               : 'border-transparent text-gray-500 hover:text-gray-300'
@@ -102,7 +110,7 @@ export default function CatalogPage() {
 
         <button
           onClick={() => setActiveTab('weapons')}
-          className={`pb-4 text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all ${
+          className={`pb-3 sm:pb-4 text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'weapons'
               ? 'border-[#ff4655] text-white'
               : 'border-transparent text-gray-500 hover:text-gray-300'
@@ -114,24 +122,24 @@ export default function CatalogPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-20">
+        <div className="text-center py-20 bg-[#1f2326]/40 rounded-2xl border border-gray-800">
           <RefreshCw className="w-8 h-8 text-[#ff4655] animate-spin mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">Carregando catálogo do banco de dados SQLite...</p>
+          <p className="text-gray-400 text-xs sm:text-sm">Carregando catálogo do banco de dados SQLite...</p>
         </div>
       ) : (
         <>
           {/* Agents Grid */}
           {activeTab === 'agents' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredAgents.map((agent) => (
                 <div
                   key={agent.uuid}
-                  className="bg-[#1f2326] border border-gray-800 rounded-xl overflow-hidden hover:border-[#ff4655]/60 transition-all p-5 flex flex-col justify-between group"
+                  className="bg-[#1f2326] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ff4655]/60 transition-all p-5 flex flex-col justify-between group shadow-lg"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-black text-white group-hover:text-[#ff4655] transition-colors">
+                        <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-[#ff4655] transition-colors">
                           {agent.displayName}
                         </h3>
                         {agent.roleName && (
@@ -146,12 +154,12 @@ export default function CatalogPage() {
                         <img
                           src={agent.displayIcon}
                           alt={agent.displayName}
-                          className="w-12 h-12 rounded-lg bg-gray-900/80 p-1 object-contain border border-gray-700"
+                          className="w-12 h-12 rounded-xl bg-gray-900/80 p-1 object-contain border border-gray-700 flex-shrink-0"
                         />
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-4">
+                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-3">
                       {agent.description}
                     </p>
                   </div>
@@ -161,7 +169,7 @@ export default function CatalogPage() {
                       <img
                         src={agent.fullPortrait}
                         alt={agent.displayName}
-                        className="h-44 object-contain group-hover:scale-105 transition-transform"
+                        className="h-40 sm:h-44 object-contain group-hover:scale-105 transition-transform"
                       />
                     </div>
                   )}
@@ -172,13 +180,13 @@ export default function CatalogPage() {
 
           {/* Maps Grid */}
           {activeTab === 'maps' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredMaps.map((map) => (
                 <div
                   key={map.uuid}
-                  className="bg-[#1f2326] border border-gray-800 rounded-xl overflow-hidden hover:border-[#ff4655]/60 transition-all group"
+                  className="bg-[#1f2326] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ff4655]/60 transition-all group shadow-lg"
                 >
-                  <div className="relative h-44 overflow-hidden bg-gray-900">
+                  <div className="relative h-44 sm:h-48 overflow-hidden bg-gray-900">
                     {map.splash ? (
                       <img
                         src={map.splash}
@@ -194,12 +202,12 @@ export default function CatalogPage() {
                   </div>
 
                   <div className="p-5">
-                    <h3 className="text-xl font-black text-white group-hover:text-[#ff4655] transition-colors">
+                    <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-[#ff4655] transition-colors">
                       {map.displayName}
                     </h3>
                     <p className="text-xs font-mono text-gray-400 mt-1 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#ff4655]" />
-                      {map.coordinates || 'Coordenadas não disponíveis'}
+                      <MapPin className="w-3.5 h-3.5 text-[#ff4655] flex-shrink-0" />
+                      <span className="truncate">{map.coordinates || 'Coordenadas não disponíveis'}</span>
                     </p>
                   </div>
                 </div>
@@ -209,15 +217,15 @@ export default function CatalogPage() {
 
           {/* Weapons Grid */}
           {activeTab === 'weapons' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredWeapons.map((weapon) => (
                 <div
                   key={weapon.uuid}
-                  className="bg-[#1f2326] border border-gray-800 rounded-xl overflow-hidden hover:border-[#ff4655]/60 transition-all p-5 flex flex-col justify-between group"
+                  className="bg-[#1f2326] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ff4655]/60 transition-all p-5 flex flex-col justify-between group shadow-lg"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-black text-white group-hover:text-[#ff4655] transition-colors">
+                      <h3 className="text-base sm:text-lg font-black text-white group-hover:text-[#ff4655] transition-colors">
                         {weapon.displayName}
                       </h3>
                       {weapon.cost && (
@@ -231,12 +239,12 @@ export default function CatalogPage() {
                     </span>
                   </div>
 
-                  <div className="my-6 flex justify-center items-center h-24">
+                  <div className="my-6 flex justify-center items-center h-20 sm:h-24">
                     {weapon.displayIcon && (
                       <img
                         src={weapon.displayIcon}
                         alt={weapon.displayName}
-                        className="max-h-20 max-w-full object-contain filter drop-shadow group-hover:scale-105 transition-transform"
+                        className="max-h-16 sm:max-h-20 max-w-full object-contain filter drop-shadow group-hover:scale-105 transition-transform"
                       />
                     )}
                   </div>

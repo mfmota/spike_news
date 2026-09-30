@@ -1,0 +1,36 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Spike News — Esports & VALORANT',
+    short_name: 'Spike News',
+    description: 'Plataforma de Esports e VALORANT em Tempo Real com placares ao vivo, notícias e catálogo de assets.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#0f1923',
+    theme_color: '#ff4655',
+    orientation: 'portrait-primary',
+    scope: '/',
+    categories: ['news', 'sports', 'games', 'entertainment'],
+    icons: [
+      {
+        src: '/icons/icon-192.svg',
+        sizes: '192x192',
+        type: 'image/svg+xml',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/icon-512.svg',
+        sizes: '512x512',
+        type: 'image/svg+xml',
+        purpose: 'any',
+      },
+      {
+        src: '/icons/icon-maskable.svg',
+        sizes: '512x512',
+        type: 'image/svg+xml',
+        purpose: 'maskable',
+      },
+    ],
+  };
+}
