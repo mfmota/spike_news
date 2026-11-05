@@ -51,8 +51,8 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(user);
 
             logger.info("Criando times padrão...");
-            Team loud = teamRepository.save(new Team("LOUD", "https://owcdn.net/img/62a26569ecf20.png", "loud"));
-            Team sentinels = teamRepository.save(new Team("Sentinels", "https://owcdn.net/img/62a2679dc6e86.png", "sen"));
+            Team loud = teamRepository.save(new Team("LOUD", "https://upload.wikimedia.org/wikipedia/commons/1/17/LOUD_LOGO.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original", "loud"));
+            Team sentinels = teamRepository.save(new Team("Sentinels", "https://owcdn.net/img/62875027c8e06.png", "sen"));
             Team fnatic = teamRepository.save(new Team("Fnatic", "https://owcdn.net/img/62a268a7ecf20.png", "fnc"));
             Team prx = teamRepository.save(new Team("Paper Rex", "https://owcdn.net/img/62a2690cecf20.png", "prx"));
 
