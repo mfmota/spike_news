@@ -37,14 +37,16 @@ public class MatchController {
         return sseService.createEmitter();
     }
 
-    @GetMapping("/live")
-    public ResponseEntity<List<MatchResponseDTO>> getLiveMatches() {
-        return ResponseEntity.ok(matchService.getLiveMatches());
-    }
-
     @GetMapping
-    public ResponseEntity<List<MatchResponseDTO>> getAllMatches() {
-        return ResponseEntity.ok(matchService.getAllMatches());
+    public ResponseEntity<List<MatchResponseDTO>> getMatches(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "20") int limit) {
+        
+        if (status != null && !status.isBlank()) {
+            return ResponseEntity.ok(matchService.getMatchesByStatus(status.toUpperCase(), limit));
+        }
+        
+        return ResponseEntity.ok(matchService.getDefaultMatches(limit));
     }
 
     @PostMapping("/internal/update")

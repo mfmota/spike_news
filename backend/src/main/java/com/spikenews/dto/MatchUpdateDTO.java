@@ -8,6 +8,8 @@ public class MatchUpdateDTO {
 
     private Long idPartida;
 
+    private String idExterno;
+
     @NotBlank(message = "Nome do time da casa é obrigatório")
     private String timeCasa;
 
@@ -30,7 +32,8 @@ public class MatchUpdateDTO {
 
     public MatchUpdateDTO() {}
 
-    public MatchUpdateDTO(String timeCasa, String logoTimeCasa, String timeFora, String logoTimeFora, Integer pontuacaoCasa, Integer pontuacaoFora, MatchStatus status, String evento) {
+    public MatchUpdateDTO(String idExterno, String timeCasa, String logoTimeCasa, String timeFora, String logoTimeFora, Integer pontuacaoCasa, Integer pontuacaoFora, MatchStatus status, String evento) {
+        this.idExterno = idExterno;
         this.timeCasa = timeCasa;
         this.logoTimeCasa = logoTimeCasa;
         this.timeFora = timeFora;
@@ -39,6 +42,10 @@ public class MatchUpdateDTO {
         this.pontuacaoFora = pontuacaoFora;
         this.status = status;
         this.evento = evento;
+    }
+
+    public String getIdExterno() {
+        return idExterno;
     }
 
     public Long getIdPartida() {
@@ -51,6 +58,10 @@ public class MatchUpdateDTO {
 
     public String getTimeCasa() {
         return timeCasa;
+    }
+
+    public void setIdExterno(String idExterno) {
+        this.idExterno = idExterno;
     }
 
     public void setTimeCasa(String timeCasa) {

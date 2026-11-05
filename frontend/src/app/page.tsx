@@ -6,6 +6,7 @@ import NewsCard from '@/components/NewsCard';
 import { News, Team } from '@/types';
 import api from '@/services/api';
 import { Flame, Download, RefreshCw, Filter, Sparkles } from 'lucide-react';
+import MatchBoard from '@/components/MatchBoard';
 
 export default function HomePage() {
   const [newsList, setNewsList] = useState<News[]>([]);
@@ -89,10 +90,10 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Realtime Live Matches SSE Banner */}
       <LiveMatchesBanner />
 
-      {/* Main Content Area */}
+      <MatchBoard />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         
         {/* News Section Header & Filters */}

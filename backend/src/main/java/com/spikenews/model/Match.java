@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 @Table(name = "matches")
 public class Match {
 
+    @Column(name = "id_externo")
+    private String idExterno;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_partida")
@@ -39,9 +42,12 @@ public class Match {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public Match() {}
+    public Match() {
+    }
 
-    public Match(Team timeCasa, Team timeFora, Integer pontuacaoCasa, Integer pontuacaoFora, MatchStatus status, String evento, LocalDateTime dataPartida) {
+    public Match(String idExterno, Team timeCasa, Team timeFora, Integer pontuacaoCasa, Integer pontuacaoFora,
+            MatchStatus status, String evento, LocalDateTime dataPartida) {
+        this.idExterno = idExterno;
         this.timeCasa = timeCasa;
         this.timeFora = timeFora;
         this.pontuacaoCasa = pontuacaoCasa;
@@ -58,6 +64,14 @@ public class Match {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getIdExterno() {
+        return idExterno;
+    }
+
+    public void setIdExterno(String idExterno) {
+        this.idExterno = idExterno;
     }
 
     public Team getTimeCasa() {

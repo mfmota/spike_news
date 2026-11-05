@@ -73,6 +73,7 @@ public class DataInitializer implements CommandLineRunner {
 
             logger.info("Criando partida ao vivo inicial...");
             matchRepository.save(new Match(
+                "match_001",
                     loud,
                     sentinels,
                     12,

@@ -1,7 +1,6 @@
 package com.spikenews;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spikenews.dto.LoginRequestDTO;
 import com.spikenews.dto.MatchUpdateDTO;
 import com.spikenews.dto.NewsRequestDTO;
 import com.spikenews.dto.RegisterRequestDTO;
@@ -84,6 +83,7 @@ public class NewsAndMatchIntegrationTest {
     @Test
     void testInternalMatchUpdateWebhook() throws Exception {
         MatchUpdateDTO updateDTO = new MatchUpdateDTO(
+                "match-123",
                 "LOUD",
                 "https://owcdn.net/img/62a26569ecf20.png",
                 "Sentinels",
